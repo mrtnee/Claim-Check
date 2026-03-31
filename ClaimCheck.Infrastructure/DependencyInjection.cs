@@ -1,5 +1,7 @@
 using ClaimCheck.Application.Claims;
 using ClaimCheck.Infrastructure.Claude;
+using ClaimCheck.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +20,11 @@ public static class DependencyInjection
         {
             client.BaseAddress = new Uri("https://api.anthropic.com/");
         });
+
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+        services.AddScoped<IClaimRepository, ClaimRepository>();
 
         return services;
     }
