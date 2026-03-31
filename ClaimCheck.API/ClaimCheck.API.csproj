@@ -10,4 +10,9 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ClaimCheck.Application\ClaimCheck.Application.csproj" />
+    <ProjectReference Include="..\ClaimCheck.Infrastructure\ClaimCheck.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

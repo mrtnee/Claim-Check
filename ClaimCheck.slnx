@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="ClaimCheck.Domain/ClaimCheck.Domain.csproj" />
+  <Project Path="ClaimCheck.Application/ClaimCheck.Application.csproj" />
+  <Project Path="ClaimCheck.Infrastructure/ClaimCheck.Infrastructure.csproj" />
   <Project Path="ClaimCheck.API/ClaimCheck.API.csproj" />
   <Project Path="ClaimCheck.Web/ClaimCheck.Web.csproj" />
 </Solution>

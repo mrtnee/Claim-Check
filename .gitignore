@@ -340,3 +340,6 @@ FodyWeavers.xsd
 *.env.local
 appsettings.Development.json
 secrets.json
+
+# Claude Code
+.claude/
