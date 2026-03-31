@@ -1,7 +1,174 @@
-﻿@page "/"
+@page "/"
+@inject IClaimService ClaimService
+@implements IDisposable
 
-<PageTitle>Home</PageTitle>
+<PageTitle>ClaimCheck — Propaganda Debunker</PageTitle>
 
-<h1>Hello, world!</h1>
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
 
-Welcome to your new app.
+    <MudText Typo="Typo.h4" GutterBottom="true">ClaimCheck</MudText>
+    <MudText Typo="Typo.subtitle1" Class="mb-6">
+        Enter a claim to analyze it for propaganda techniques and factual accuracy.
+    </MudText>
+
+    <MudTextField @bind-Value="_claimText"
+                  Label="Enter a claim"
+                  Variant="Variant.Outlined"
+                  Lines="4"
+                  Placeholder="@_currentPlaceholder"
+                  Immediate="true"
+                  Disabled="_isLoading"
+                  OnKeyDown="HandleKeyDown"
+                  Class="mb-4" />
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               OnClick="SubmitAsync"
+               Disabled="_isLoading || string.IsNullOrWhiteSpace(_claimText)"
+               Class="mb-6">
+        @if (_isLoading)
+        {
+            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            <span>Analyzing...</span>
+        }
+        else
+        {
+            <span>Analyze Claim</span>
+        }
+    </MudButton>
+
+    @if (_errorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+    }
+
+    @if (_result is not null)
+    {
+        <MudDivider Class="mb-4" />
+        <MudText Typo="Typo.h5" Class="mb-4">Analysis Result</MudText>
+
+        <MudPaper Class="pa-4 mb-4" Elevation="2">
+            <MudText Typo="Typo.subtitle2" Class="mb-1">Truthfulness Score</MudText>
+            <MudText Typo="Typo.h3" Color="@ScoreColor(_result.TruthfulnessScore)">
+                @_result.TruthfulnessScore / 10
+            </MudText>
+        </MudPaper>
+
+        <MudPaper Class="pa-4 mb-4" Elevation="2">
+            <MudText Typo="Typo.subtitle2" Class="mb-2">Explanation</MudText>
+            <MudText>@_result.Explanation</MudText>
+        </MudPaper>
+
+        @if (_result.Techniques.Length > 0)
+        {
+            <MudPaper Class="pa-4 mb-4" Elevation="2">
+                <MudText Typo="Typo.subtitle2" Class="mb-2">Propaganda Techniques Detected</MudText>
+                @foreach (var technique in _result.Techniques)
+                {
+                    <MudChip T="string" Color="Color.Warning" Class="mr-1 mb-1">@technique</MudChip>
+                }
+            </MudPaper>
+        }
+
+        @if (_result.CounterArguments.Length > 0)
+        {
+            <MudPaper Class="pa-4 mb-4" Elevation="2">
+                <MudText Typo="Typo.subtitle2" Class="mb-2">Counter-Arguments</MudText>
+                <MudList T="string">
+                    @foreach (var arg in _result.CounterArguments)
+                    {
+                        <MudListItem Icon="@Icons.Material.Filled.CheckCircle"
+                                     IconColor="Color.Success">
+                            @arg
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudPaper>
+        }
+    }
+
+</MudContainer>
+
+@code {
+    private static readonly string[] Placeholders =
+    [
+        "Hey, I am actually the smartest person alive.",
+        "Puppies are evil.",
+        "Vaccines cause autism.",
+        "The earth is flat.",
+        "5G towers spread COVID-19.",
+        "Climate change is a hoax invented by scientists.",
+        "Eating chocolate every day improves your IQ.",
+        "The moon landing was staged in a Hollywood studio.",
+        "Sharks are responsible for most swimming pool deaths.",
+        "Drinking bleach cures all diseases.",
+        "Finland doesn't actually exist — it's a Japanese conspiracy.",
+        "Birds are government drones sent to spy on citizens.",
+        "Cats are plotting world domination and are just waiting for the right moment.",
+        "The Great Wall of China is visible from space with the naked eye.",
+        "Napoleon Bonaparte was actually very tall — historians shrunk him out of jealousy.",
+        "Einstein failed math as a child.",
+        "Humans only use 10% of their brain.",
+        "Eating carrots gives you perfect night vision.",
+        "Walt Disney was cryogenically frozen after his death.",
+        "Goldfish have a 3-second memory.",
+    ];
+
+    private string _currentPlaceholder = Placeholders[0];
+    private int _placeholderIndex;
+    private Timer? _placeholderTimer;
+
+    private string _claimText = string.Empty;
+    private bool _isLoading;
+    private string? _errorMessage;
+    private ClaimResultModel? _result;
+
+    private async Task SubmitAsync()
+    {
+        _errorMessage = null;
+        _result = null;
+        _isLoading = true;
+
+        try
+        {
+            _result = await ClaimService.AnalyzeAsync(_claimText);
+        }
+        catch (HttpRequestException ex)
+        {
+            _errorMessage = $"Could not reach the API: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _placeholderTimer = new Timer(_ =>
+        {
+            _placeholderIndex = (_placeholderIndex + 1) % Placeholders.Length;
+            _currentPlaceholder = Placeholders[_placeholderIndex];
+            InvokeAsync(StateHasChanged);
+        }, null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
+    }
+
+    public void Dispose() => _placeholderTimer?.Dispose();
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && e.CtrlKey && !_isLoading && !string.IsNullOrWhiteSpace(_claimText))
+            await SubmitAsync();
+    }
+
+    private static Color ScoreColor(int score) => score switch
+    {
+        >= 8 => Color.Success,
+        >= 5 => Color.Warning,
+        _    => Color.Error
+    };
+}
