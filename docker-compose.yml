@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - claimcheck-db-data:/var/lib/postgresql/data
+      - claimcheck-db-data:/var/lib/postgresql
 
 volumes:
   claimcheck-db-data:
