@@ -1,3 +1,3 @@
 namespace ClaimCheck.Application.Claims;
 
-public sealed record AnalyzeClaimCommand(string ClaimText);
+public sealed record AnalyzeClaimCommand(string ClaimText, string UserId);

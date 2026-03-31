@@ -20,7 +20,7 @@ public sealed class AnalyzeClaimHandler
         var claimText = ClaimText.Create(command.ClaimText);
         var result = await _claudeClient.AnalyzeAsync(claimText, ct);
 
-        var analysis = ClaimAnalysis.Create(claimText.Value, result);
+        var analysis = ClaimAnalysis.Create(claimText.Value, result, command.UserId);
         await _repository.SaveAsync(analysis, ct);
 
         return result;
