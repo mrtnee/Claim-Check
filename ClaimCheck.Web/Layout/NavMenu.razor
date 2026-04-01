@@ -1,6 +1,28 @@
+@inject IAuthService AuthService
+@inject NavigationManager Nav
+
 <MudNavMenu>
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+  <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+
+  <AuthorizeView>
+    <Authorized>
+      <MudNavLink Icon="@Icons.Material.Filled.AccountCircle" Disabled="true">
+        @(context.User.FindFirst(c =>
+            c.Type == "email" || c.Type.EndsWith("/emailaddress"))?.Value)
+      </MudNavLink>
+      <MudNavLink Icon="@Icons.Material.Filled.Logout" OnClick="LogoutAsync">Logout</MudNavLink>
+    </Authorized>
+    <NotAuthorized>
+      <MudNavLink Href="/login" Icon="@Icons.Material.Filled.Login">Sign In</MudNavLink>
+      <MudNavLink Href="/register" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
+    </NotAuthorized>
+  </AuthorizeView>
 </MudNavMenu>
 
 @code {
+  private async Task LogoutAsync()
+  {
+    await AuthService.LogoutAsync();
+    Nav.NavigateTo("/login", replace: true);
+  }
 }

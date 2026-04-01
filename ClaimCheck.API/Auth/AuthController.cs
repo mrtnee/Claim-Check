@@ -52,16 +52,16 @@ public sealed class AuthController(
 
     var claims = new[]
     {
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Email, user.Email!)
-        };
+      new Claim(ClaimTypes.NameIdentifier, user.Id),
+      new Claim(ClaimTypes.Email, user.Email!)
+    };
 
     var token = new JwtSecurityToken(
-        issuer: _jwt.Issuer,
-        audience: _jwt.Audience,
-        claims: claims,
-        expires: DateTime.UtcNow.AddHours(_jwt.ExpiryHours),
-        signingCredentials: credentials);
+      issuer: _jwt.Issuer,
+      audience: _jwt.Audience,
+      claims: claims,
+      expires: DateTime.UtcNow.AddHours(_jwt.ExpiryHours),
+      signingCredentials: credentials);
 
     return new JwtSecurityTokenHandler().WriteToken(token);
   }

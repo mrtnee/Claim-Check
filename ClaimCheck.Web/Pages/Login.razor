@@ -1,0 +1,79 @@
+@page "/login"
+@inject IAuthService AuthService
+@inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Sign In — ClaimCheck</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+  <MudPaper Class="pa-8" Elevation="4">
+    <MudText Typo="Typo.h5" Class="mb-6">Sign In</MudText>
+
+    @if (_error is not null)
+    {
+      <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+
+    <MudTextField @bind-Value="_email"
+                  Label="Email"
+                  InputType="InputType.Email"
+                  Variant="Variant.Outlined"
+                  Class="mb-4"
+                  Disabled="_loading" />
+
+    <MudTextField @bind-Value="_password"
+                  Label="Password"
+                  InputType="InputType.Password"
+                  Variant="Variant.Outlined"
+                  Class="mb-6"
+                  Disabled="_loading" />
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               FullWidth="true"
+               OnClick="SubmitAsync"
+               Disabled="_loading">
+      @if (_loading)
+      {
+        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+      }
+      Sign In
+    </MudButton>
+
+    <MudText Class="mt-4" Align="Align.Center">
+      No account? <MudLink Href="/register">Register</MudLink>
+    </MudText>
+  </MudPaper>
+</MudContainer>
+
+@code {
+  private string _email = string.Empty;
+  private string _password = string.Empty;
+  private string? _error;
+  private bool _loading;
+
+  protected override async Task OnInitializedAsync()
+  {
+    var state = await AuthStateProvider.GetAuthenticationStateAsync();
+    if (state.User.Identity?.IsAuthenticated == true)
+      Nav.NavigateTo("/", replace: true);
+  }
+
+  private async Task SubmitAsync()
+  {
+    _error = null;
+    _loading = true;
+    try
+    {
+      var success = await AuthService.LoginAsync(_email, _password);
+      if (success)
+        Nav.NavigateTo("/", replace: true);
+      else
+        _error = "Invalid email or password.";
+    }
+    finally
+    {
+      _loading = false;
+    }
+  }
+}

@@ -1,0 +1,95 @@
+@page "/register"
+@inject IAuthService AuthService
+@inject NavigationManager Nav
+
+<PageTitle>Register — ClaimCheck</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+  <MudPaper Class="pa-8" Elevation="4">
+    <MudText Typo="Typo.h5" Class="mb-6">Create Account</MudText>
+
+    @if (_errors.Length > 0)
+    {
+      <MudAlert Severity="Severity.Error" Class="mb-4">
+        @foreach (var e in _errors)
+        {
+          <div>@e</div>
+        }
+      </MudAlert>
+    }
+
+    <MudTextField @bind-Value="_email"
+                  Label="Email"
+                  InputType="InputType.Email"
+                  Variant="Variant.Outlined"
+                  Class="mb-4"
+                  Disabled="_loading" />
+
+    <MudTextField @bind-Value="_password"
+                  Label="Password"
+                  InputType="InputType.Password"
+                  Variant="Variant.Outlined"
+                  Class="mb-4"
+                  Disabled="_loading" />
+
+    <MudTextField @bind-Value="_confirm"
+                  Label="Confirm Password"
+                  InputType="InputType.Password"
+                  Variant="Variant.Outlined"
+                  Class="mb-6"
+                  Disabled="_loading" />
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               FullWidth="true"
+               OnClick="SubmitAsync"
+               Disabled="_loading">
+      @if (_loading)
+      {
+        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+      }
+      Create Account
+    </MudButton>
+
+    <MudText Class="mt-4" Align="Align.Center">
+      Already have an account? <MudLink Href="/login">Sign In</MudLink>
+    </MudText>
+  </MudPaper>
+</MudContainer>
+
+@code {
+  private string _email = string.Empty;
+  private string _password = string.Empty;
+  private string _confirm = string.Empty;
+  private string[] _errors = [];
+  private bool _loading;
+
+  private async Task SubmitAsync()
+  {
+    if (_password != _confirm)
+    {
+      _errors = ["Passwords do not match."];
+      return;
+    }
+
+    _errors = [];
+    _loading = true;
+    try
+    {
+      var errors = await AuthService.RegisterAsync(_email, _password);
+      if (errors.Length == 0)
+      {
+        await AuthService.LoginAsync(_email, _password);
+        Nav.NavigateTo("/", replace: true);
+      }
+      else
+      {
+        _errors = errors;
+      }
+    }
+    finally
+    {
+      _loading = false;
+    }
+  }
+}
