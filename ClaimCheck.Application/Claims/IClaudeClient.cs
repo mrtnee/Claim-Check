@@ -4,5 +4,5 @@ namespace ClaimCheck.Application.Claims;
 
 public interface IClaudeClient
 {
-    Task<ClaimAnalysisResult> AnalyzeAsync(ClaimText claim, CancellationToken ct = default);
+  Task<ClaimAnalysisResult> AnalyzeAsync(ClaimText claim, CancellationToken ct = default);
 }

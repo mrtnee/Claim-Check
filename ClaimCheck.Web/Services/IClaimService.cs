@@ -4,5 +4,5 @@ namespace ClaimCheck.Web.Services;
 
 public interface IClaimService
 {
-    Task<ClaimResultModel> AnalyzeAsync(string claimText, CancellationToken ct = default);
+  Task<ClaimResultModel> AnalyzeAsync(string claimText, CancellationToken ct = default);
 }

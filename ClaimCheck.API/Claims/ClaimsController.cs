@@ -10,25 +10,25 @@ namespace ClaimCheck.API.Claims;
 [Route("api/[controller]")]
 public sealed class ClaimsController : ControllerBase
 {
-    private readonly AnalyzeClaimHandler _handler;
+  private readonly AnalyzeClaimHandler _handler;
 
-    public ClaimsController(AnalyzeClaimHandler handler) => _handler = handler;
+  public ClaimsController(AnalyzeClaimHandler handler) => _handler = handler;
 
-    [HttpPost]
-    public async Task<ActionResult<ClaimResponse>> Post(
-        [FromBody] ClaimRequest request,
-        CancellationToken ct)
-    {
-        if (string.IsNullOrWhiteSpace(request.ClaimText))
-            return BadRequest("Claim text is required.");
+  [HttpPost]
+  public async Task<ActionResult<ClaimResponse>> Post(
+      [FromBody] ClaimRequest request,
+      CancellationToken ct)
+  {
+    if (string.IsNullOrWhiteSpace(request.ClaimText))
+      return BadRequest("Claim text is required.");
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var result = await _handler.HandleAsync(new AnalyzeClaimCommand(request.ClaimText, userId), ct);
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+    var result = await _handler.HandleAsync(new AnalyzeClaimCommand(request.ClaimText, userId), ct);
 
-        return Ok(new ClaimResponse(
-            result.Techniques,
-            result.CounterArguments,
-            result.TruthfulnessScore,
-            result.Explanation));
-    }
+    return Ok(new ClaimResponse(
+        result.Techniques,
+        result.CounterArguments,
+        result.TruthfulnessScore,
+        result.Explanation));
+  }
 }
