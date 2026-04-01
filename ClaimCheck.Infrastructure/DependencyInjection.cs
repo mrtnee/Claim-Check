@@ -19,7 +19,7 @@ public static class DependencyInjection
       IConfiguration configuration)
   {
     services.Configure<ClaudeOptions>(
-        configuration.GetSection(ClaudeOptions.SectionName));
+      configuration.GetSection(ClaudeOptions.SectionName));
 
     services.AddHttpClient<IClaudeClient, ClaudeClient>(client =>
     {
@@ -27,7 +27,7 @@ public static class DependencyInjection
     });
 
     services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+      options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
     services.AddScoped<IClaimRepository, ClaimRepository>();
 

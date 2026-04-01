@@ -14,8 +14,8 @@ public sealed class AnalyzeClaimHandler
   }
 
   public async Task<ClaimAnalysisResult> HandleAsync(
-      AnalyzeClaimCommand command,
-      CancellationToken ct = default)
+    AnalyzeClaimCommand command,
+    CancellationToken ct = default)
   {
     var claimText = ClaimText.Create(command.ClaimText);
     var result = await _claudeClient.AnalyzeAsync(claimText, ct);
