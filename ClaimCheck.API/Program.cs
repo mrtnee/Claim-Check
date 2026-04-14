@@ -1,10 +1,14 @@
 using ClaimCheck.Application.Claims;
 using ClaimCheck.Infrastructure;
 using ClaimCheck.Infrastructure.Persistence;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+  options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto);
 
 var allowedOrigins = builder.Configuration
   .GetSection("Cors:AllowedOrigins")
@@ -40,7 +44,7 @@ if (app.Environment.IsDevelopment())
   app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
+app.UseForwardedHeaders();
 app.UseCors("BlazorClient");
 app.UseAuthentication();
 app.UseAuthorization();
