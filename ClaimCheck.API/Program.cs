@@ -20,6 +20,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<AnalyzeClaimHandler>();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddHealthChecks()
+  .AddDbContextCheck<AppDbContext>();
 
 var app = builder.Build();
 
@@ -43,5 +45,6 @@ app.UseCors("BlazorClient");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHealthChecks("/health").AllowAnonymous();
 
 app.Run();
