@@ -24,7 +24,7 @@ Layered architecture (DDD-inspired, not over-engineered):
 | Testing | xUnit + Moq |
 | Containerization | Docker |
 | CI/CD | GitHub Actions |
-| Hosting | Railway (API + DB), Vercel/Netlify (frontend) |
+| Hosting | AWS ECS Fargate (API), RDS (PostgreSQL), S3 + CloudFront (frontend) |
 
 ## Features
 
@@ -49,11 +49,35 @@ Calls the Anthropic API directly via a thin `HttpClient` wrapper. Each request s
 
 ### Prerequisites
 
-- .NET 9 SDK
+- .NET 10 SDK
 - PostgreSQL
-- Docker (optional)
+- Docker
 
-### Running locally
+### Running with Docker Compose (recommended)
+
+The easiest way to run the full stack locally — API, frontend, and database all start with a single command.
+
+1. Copy the example env files:
+   ```bash
+   cp .env.example .env
+   cp .env.api.example .env.api
+   ```
+2. Fill in the required secrets in `.env.api`:
+   - `ANTHROPIC__APIKEY` — your Anthropic API key
+   - `JWT__KEY` — any string of at least 32 characters
+3. Start all services:
+   ```bash
+   docker compose up --build
+   ```
+4. Access the app:
+   - Frontend: http://localhost:5138
+   - API: http://localhost:5278
+
+Database migrations run automatically on API startup — no manual steps needed.
+
+---
+
+### Running locally (without Docker)
 
 1. Clone the repository
 2. Configure your connection string and Anthropic API key in `appsettings.Development.json`

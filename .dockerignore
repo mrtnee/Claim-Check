@@ -1,0 +1,18 @@
+# Build artifacts
+**/bin/
+**/obj/
+
+# Version control
+.git/
+
+# IDE
+.vs/
+.idea/
+
+# Secrets
+.env*
+!.env*.example
+
+# Compose and docs
+docker-compose.yml
+*.md

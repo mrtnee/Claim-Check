@@ -9,7 +9,7 @@ COPY ClaimCheck.Infrastructure/ClaimCheck.Infrastructure.csproj ClaimCheck.Infra
 RUN dotnet restore ClaimCheck.API/ClaimCheck.API.csproj
 
 COPY . .
-RUN dotnet publish ClaimCheck.API/ClaimCheck.API.csproj -c Release -o /app/publish
+RUN dotnet publish ClaimCheck.API/ClaimCheck.API.csproj -c Release --no-restore -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
