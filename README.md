@@ -83,15 +83,15 @@ Database migrations run automatically on API startup — no manual steps needed.
 2. Configure your connection string and Anthropic API key in `appsettings.Development.json`
 3. Apply EF Core migrations:
    ```bash
-   dotnet ef database update --project ClaimCheck.Infrastructure
+   dotnet ef database update --project src/ClaimCheck.Infrastructure
    ```
 4. Run the API:
    ```bash
-   dotnet run --project ClaimCheck.API
+   dotnet run --project src/ClaimCheck.API
    ```
 5. Run the frontend:
    ```bash
-   dotnet run --project ClaimCheck.Web
+   dotnet run --project src/ClaimCheck.Web
    ```
 
 ## Testing
