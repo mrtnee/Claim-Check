@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: ClaimCheck.API/Dockerfile
+      dockerfile: src/ClaimCheck.API/Dockerfile
     env_file:
       - .env.api
     ports:
@@ -14,7 +14,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: ClaimCheck.Web/Dockerfile
+      dockerfile: src/ClaimCheck.Web/Dockerfile
     ports:
       - "5138:80"
 
